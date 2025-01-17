@@ -7,7 +7,7 @@ int main() {
 
 	sf::RectangleShape rectangle;
 	rectangle.setSize(sf::Vector2f(50, 50));
-	rectangle.setFillColor(sf::Color::Blue
+	rectangle.setFillColor(sf::Color::Blue);
 	rectangle.setPosition(sf::Vector2f(0, 0));
 
 	sf::Event event;
