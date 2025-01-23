@@ -19,6 +19,9 @@ public:
 	bool isRunning;
 	float deltaTime;
 	sf::RenderWindow window;
+	
+private:
+	void mapCreation();
 };
 
 class Entity {

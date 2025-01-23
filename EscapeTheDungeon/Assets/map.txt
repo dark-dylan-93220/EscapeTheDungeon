@@ -1,0 +1,12 @@
+wall-right
+wall-left
+wall-top
+wall-bottom
+wall-full
+speed-potion
+door-key
+door-top-left
+door-top-right
+door-bottom-left
+door-bottom-right
+STOP

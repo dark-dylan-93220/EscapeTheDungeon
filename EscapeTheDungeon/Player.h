@@ -11,11 +11,12 @@ public:
 	sf::RectangleShape playerTexture;
 	float deltaTime;
 	sf::Vector2f position;
-	unsigned int vitesse;
+	int vitesse;
 
 public:
+	void initTextures();
 	void handleInput(sf::Event& event);
-	void update(float deltaTime, sf::Vector2f &position) override;
+	void update(float deltaTime, sf::Vector2f& position) override;
 	void draw(sf::RenderWindow& window) override;
 };
 
