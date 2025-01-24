@@ -7,12 +7,12 @@ namespace {
 }
 
 Player::Player() :
-	vitesse(500),
+	vitesse(250),
 	position(fullscreenModes[0].width / 2, fullscreenModes[0].height / 2),
 	deltaTime(0)
 {
 	initTextures();
-	playerTexture.setSize(sf::Vector2f(100,100));
+	playerTexture.setSize(sf::Vector2f(40,40));
 	playerTexture.setTexture(&playerTXTure);
 	playerTexture.setPosition(sf::Vector2f(
 		this->position.x - this->playerTexture.getSize().x / 2,

@@ -16,6 +16,10 @@ void Enemy::draw(sf::RenderWindow& window) {
 	window.draw(enemyShape);
 }
 
+bool Enemy::getGameOver() {
+	return gameOver;
+}
+
 void ChaserEnemy::setTexture() {
 	enemyShape.setTexture(&chaserEnemyTXTure);
 }
@@ -29,7 +33,8 @@ void ChaserEnemy::update(float deltaTime, sf::Vector2f& position) {
 	// this->position : Position de l'ennemi en question
 	this->position = enemyShape.getPosition();
 	if (enemyShape.getGlobalBounds().contains(position)) {
-		std::cout << "GAME OVER" << std::endl;
+		// Game over
+		gameOver = true;
 		return;
 	}
 	if (position.x > this->position.x) {
@@ -48,5 +53,10 @@ void ChaserEnemy::update(float deltaTime, sf::Vector2f& position) {
 
 void PatrollingEnemy::update(float deltaTime, sf::Vector2f& position) {
 	// Chemin programmé, random dans une liste de chmins programmés
+	if (enemyShape.getGlobalBounds().contains(position)) {
+		// Game over
+		gameOver = true;
+		return;
+	}
 	return;
 }

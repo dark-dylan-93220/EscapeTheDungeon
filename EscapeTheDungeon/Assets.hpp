@@ -9,6 +9,10 @@ namespace {
 	sf::Texture fullWall;
 	sf::Texture wallLeftFloor;
 	sf::Texture wallRightFloor;
+	sf::Texture wallTopLeft;
+	sf::Texture wallTopRight;
+	sf::Texture wallBottomLeft;
+	sf::Texture wallBottomRight;
 	sf::Texture floorTile;
 	sf::Texture speedPotion;
 	sf::Texture doorKey;
@@ -21,12 +25,16 @@ namespace {
 class Assets {
 public:
 	Assets() {
-		wallLeft.loadFromFile("Assets/Images/Map/Walls/wall-left.png");
-		wallRight.loadFromFile("Assets/Images/Map/Walls/wall-right.png");
+		wallRight.loadFromFile("Assets/Images/Map/Walls/wall-left.png");
+		wallLeft.loadFromFile("Assets/Images/Map/Walls/wall-right.png");
 		wallTop.loadFromFile("Assets/Images/Map/Walls/wall-top.png");
 		wallBottom.loadFromFile("Assets/Images/Map/Walls/wall-bottom.png");
 		wallLeftFloor.loadFromFile("Assets/Images/Map/Walls/wall-left-floor.png");
 		wallRightFloor.loadFromFile("Assets/Images/Map/Walls/wall-right-floor.png");
+		wallTopLeft.loadFromFile("Assets/Images/Map/Walls/wall-top-left.png");
+		wallTopRight.loadFromFile("Assets/Images/Map/Walls/wall-top-right.png");
+		wallBottomLeft.loadFromFile("Assets/Images/Map/Walls/wall-bottom-left.png");
+		wallBottomRight.loadFromFile("Assets/Images/Map/Walls/wall-bottom-right.png");
 		fullWall.loadFromFile("Assets/Images/Map/Walls/full-wall.png");
 		floorTile.loadFromFile("Assets/Images/Map/Floor/tile.png");
 		speedPotion.loadFromFile("Assets/Images/Map/Floor/potion-floor.png");
@@ -36,35 +44,44 @@ public:
 		doorTopLeft.loadFromFile("Assets/Images/Map/Door/door-top-left.png");
 		doorTopRight.loadFromFile("Assets/Images/Map/Door/door-top-right.png");
 	}
-	void setElementTexture(const std::string& assetCode, sf::RectangleShape& element) {
+	void setElementTexture(const std::string& assetCode, sf::RectangleShape& element, sf::Vector2f position) {
+		element.setPosition(position);
 		if (assetCode == "wallLeft")
 			element.setTexture(&wallLeft);
 		else if (assetCode == "wallRight")
-			return;
+			element.setTexture(&wallRight);
 		else if (assetCode == "wallTop")
-			return;
+			element.setTexture(&wallTop);
 		else if (assetCode == "wallBottom")
-			return;
+			element.setTexture(&wallBottom);
 		else if (assetCode == "fullWall")
-			return;
+			element.setTexture(&fullWall);
 		else if (assetCode == "wallLeftFloor")
-			return;
+			element.setTexture(&wallLeftFloor);
 		else if (assetCode == "wallRightFloor")
-			return;
+			element.setTexture(&wallRightFloor);
+		else if (assetCode == "wallTopLeft")
+			element.setTexture(&wallTopLeft);
+		else if (assetCode == "wallTopRight")
+			element.setTexture(&wallTopRight);
+		else if (assetCode == "wallBottomLeft")
+			element.setTexture(&wallBottomLeft);
+		else if (assetCode == "wallBottomRight")
+			element.setTexture(&wallBottomRight);
 		else if (assetCode == "floorTile")
-			return;
+			element.setTexture(&floorTile);
 		else if (assetCode == "speedPotion")
-			return;
+			element.setTexture(&speedPotion);
 		else if (assetCode == "doorKey")
-			return;
+			element.setTexture(&doorKey);
 		else if (assetCode == "doorTopLeft")
-			return;
+			element.setTexture(&doorTopLeft);
 		else if (assetCode == "doorTopRight")
-			return;
+			element.setTexture(&doorTopRight);
 		else if (assetCode == "doorBottomLeft")
-			return;
+			element.setTexture(&doorBottomLeft);
 		else if (assetCode == "doorBottomRight")
-			return;
+			element.setTexture(&doorBottomRight);
 		else {
 			std::cerr << "Aucun code d'asset ne correspond a cette texture. (" << assetCode << ")\n";
 		}

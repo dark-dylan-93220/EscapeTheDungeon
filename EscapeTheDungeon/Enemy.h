@@ -22,6 +22,7 @@ protected:
 	std::string nom;
 	int vie;
 	int vitesse;
+	bool gameOver = false;
 
 public:
 	Enemy(const std::string& nom, int vie, int vitesse)
@@ -34,6 +35,7 @@ public:
 	void initTextures();
 	void update(float deltaTime, sf::Vector2f& position) override {};
 	void draw(sf::RenderWindow& window) override;
+	bool getGameOver();
 };
 
 
@@ -43,7 +45,7 @@ private:
 public:
 	ChaserEnemy(const std::string& nom, int vie, double vitesse)
 		: Enemy(nom, vie, vitesse) {
-		enemyShape.setSize(sf::Vector2f(70, 70));
+		enemyShape.setSize(sf::Vector2f(40, 40));
 		enemyShape.setPosition(sf::Vector2f(
 			rand() % fullscreenModes[0].width, 
 			rand() % fullscreenModes[0].height
@@ -70,7 +72,7 @@ private:
 public:
 	PatrollingEnemy(const std::string& nom, int vie, double vitesse)
 		: Enemy(nom, vie, vitesse) {
-		enemyShape.setSize(sf::Vector2f(70, 70));
+		enemyShape.setSize(sf::Vector2f(40, 40));
 		enemyShape.setPosition(patrollingPositions[positionIndex]);
 		positionIndex++;
 		position = enemyShape.getPosition();
