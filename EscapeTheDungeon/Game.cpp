@@ -1,16 +1,48 @@
 #include <iostream>
 
 #include "FileHandler.hpp"
+#include "Assets.hpp"
 
 #include "Game.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "Assets.hpp"
+
 
 namespace {
 	sf::RectangleShape tile;
 	sf::Vector2f tilePosition;
 	std::vector<sf::RectangleShape> tiles;
+	std::vector<sf::RectangleShape> onlyWalls;
+	sf::RectangleShape key;
+	sf::RectangleShape speedPotionRect;
+	std::vector<int> patrollerTopRightRoutine = {
+		2,
+		3,3,3,3,3,3,3,
+		1,
+		4,4,4,4,4,4,4
+	}; 
+	std::vector<int> patrollerTopLeftRoutine = {
+		2,2,2,2,
+		4,4,4,4,
+		1,1,1,1,
+		3,3,3,3
+	}; 
+	std::vector<int> patrollerBottomRightRoutine = {
+		1,1,1,1,1,
+		4,4,4,
+		2,2,2,2,2,
+		3,3,3
+	}; 
+	std::vector<int> patrollerBottomLeftRoutine = {
+		1,1,1,1,1,
+		3,3,3,
+		4,4,4,
+		2,2,2,2,2
+	};
+	std::vector<int> patrollerCenterBottomRoutine = {
+		4,4,4,4,4,4,4,4,
+		3,3,3,3,3,3,3,3
+	};
 }
 
 Game::Game() :
@@ -39,18 +71,22 @@ void Game::mapCreation() { // 48x27 tileset
 			case 'L':
 				std::cout << "L";
 				asset.setElementTexture("wallLeftFloor", tiles[totalTiles], tilePosition); // i-ème colonne, j-ème ligne
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case 'R':
 				std::cout << "R";
 				asset.setElementTexture("wallRightFloor", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case 'l':
 				std::cout << "l";
 				asset.setElementTexture("wallRight", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case 'r':
 				std::cout << "r";
 				asset.setElementTexture("wallLeft", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case '-':
 				std::cout << "-";
@@ -59,22 +95,27 @@ void Game::mapCreation() { // 48x27 tileset
 			case 'T':
 				std::cout << "T";
 				asset.setElementTexture("wallTop", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case 'B':
 				std::cout << "B";
 				asset.setElementTexture("wallBottom", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case 'F':
 				std::cout << "F";
 				asset.setElementTexture("fullWall", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case '/':
 				std::cout << "/";
 				asset.setElementTexture("wallTopLeft", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case '\\':
 				std::cout << "\\";
 				asset.setElementTexture("wallTopRight", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case '2':
 				std::cout << "2";
@@ -95,10 +136,12 @@ void Game::mapCreation() { // 48x27 tileset
 			case '6':
 				std::cout << "6";
 				asset.setElementTexture("wallBottomLeft", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			case '9':
 				std::cout << "9";
 				asset.setElementTexture("wallBottomRight", tiles[totalTiles], tilePosition);
+				onlyWalls.push_back(tiles[totalTiles]);
 				break;
 			default:
 				break;
@@ -107,10 +150,20 @@ void Game::mapCreation() { // 48x27 tileset
 		}
 		std::cout << std::endl;
 	}
+
+	// Key and speed potion
+	// ---
+	// Key :
+	key.setSize(tile.getSize());
+	key.setPosition(((45.f / 48.f) * fullscreenModes[0].width), ((6.f / 27.f) * fullscreenModes[0].height));
+	asset.setElementTexture("doorKey", key, key.getPosition());
+	// Speed potion :
+	speedPotionRect.setSize(tile.getSize());
+	speedPotionRect.setPosition((((float)(rand() % 48) / 48.f)* fullscreenModes[0].width), (((float)(rand() % 27) / 27.f)* fullscreenModes[0].height));
+	asset.setElementTexture("speedPotion", speedPotionRect, speedPotionRect.getPosition());
 }
 
 void Game::run() {
-
 	Player player;
 	Enemy enemy("", 0, 0); // Utilisé pour créer des ennemis de façon aléatoire
 	int numberOfEnemies = 10;
@@ -126,36 +179,110 @@ void Game::run() {
 
 	std::cout << "Nombre d'ennemis : " << numberOfEnemies << std::endl;
 
+	int patrollingEnemiesRoutineStep = 0;
+	int declencher = 0;
+
+	sf::Font EightBitDragon;
+	if (!EightBitDragon.loadFromFile("Assets/Fonts/8bitDragon.ttf")) {
+		std::cerr << "Police 8-bit dragon non chargee." << std::endl;
+	}
+	sf::Text winTXT;
+	winTXT.setString("YOU WIN!");
+	winTXT.setFont(EightBitDragon);
+	winTXT.setFillColor(sf::Color::Yellow);
+	winTXT.setOutlineColor(sf::Color::Black);
+	winTXT.setOutlineThickness(2.f);
+	winTXT.setCharacterSize(90);
+	winTXT.setPosition(sf::Vector2f(fullscreenModes[0].width / 2.f - winTXT.getLocalBounds().width / 2.f, fullscreenModes[0].height / 2.f - winTXT.getLocalBounds().height / 2.f));
+	sf::Text gameOverTXT;
+	gameOverTXT.setString("GAME OVER");
+	gameOverTXT.setFont(EightBitDragon);
+	gameOverTXT.setFillColor(sf::Color::Red);
+	gameOverTXT.setOutlineColor(sf::Color::Black);
+	gameOverTXT.setOutlineThickness(2.f);
+	gameOverTXT.setCharacterSize(90);
+	gameOverTXT.setPosition(sf::Vector2f(fullscreenModes[0].width / 2.f - gameOverTXT.getLocalBounds().width / 2.f, fullscreenModes[0].height / 2.f - gameOverTXT.getLocalBounds().height / 2.f));
+
 	mapCreation();
 
-	while (window.isOpen() && isRunning) {
+	while (window.isOpen()) {
 
 		deltaTime = Clock.restart().asSeconds();
+
 		player.deltaTime = deltaTime;
 
 		// Polling the events
 
-		player.handleInput(event);
+		player.handleInput(onlyWalls, player.playerTexture);
+
+		if (player.win()) {
+			while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+				window.clear();
+				window.draw(winTXT);
+				window.display();
+			}
+			window.close();
+			break;
+		}
+		else if (isGameOver) {
+			while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+				window.clear();
+				window.draw(gameOverTXT);
+				window.display();
+			}
+			window.close();
+			break;
+		}
 
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
 				std::cout << "Programme termine" << std::endl;
+				return;
 			}
 		}
 
 		// Updating the enemies' behavior and the player's position
 
-		player.update(deltaTime, player.position);
+		player.update(deltaTime, player.position, player.playerTexture);
 		player.position = player.playerTexture.getPosition();
+		int check = 0;
 		for (auto& enemies : enemy.enemies) {
-			enemies->update(deltaTime, player.position);
-			if (enemies->getGameOver()) {
-				isRunning = false;
-				window.close();
+			if (check % 2 != 0) { // Patrolling enemy
+				switch (check) {
+				case 1:
+					enemies->pathScrpting(patrollerBottomRightRoutine, patrollingEnemiesRoutineStep);
+					break;
+				case 3:
+					enemies->pathScrpting(patrollerTopRightRoutine, patrollingEnemiesRoutineStep);
+					break;
+				case 5:
+					enemies->pathScrpting(patrollerBottomLeftRoutine, patrollingEnemiesRoutineStep);
+					break;
+				case 7:
+					enemies->pathScrpting(patrollerTopLeftRoutine, patrollingEnemiesRoutineStep);
+					break;
+				case 9:
+					enemies->pathScrpting(patrollerCenterBottomRoutine, patrollingEnemiesRoutineStep);
+					break;
+				default:
+					break;
+				}
+				if (patrollingEnemiesRoutineStep == 15) {
+					patrollingEnemiesRoutineStep = 0;
+				}
 			}
+			enemies->checkWallCollisions(onlyWalls, enemies->enemyShape, deltaTime);
+			enemies->update(deltaTime, player.position, player.playerTexture);
+			if (enemies->getGameOver()) {
+				isGameOver = true;
+			}
+			check++;
 		}
+
+		patrollingEnemiesRoutineStep++;
+		declencher++;
 
 		window.clear(sf::Color(64,64,64));
 
@@ -173,7 +300,20 @@ void Game::run() {
 
 		// Draw the objects
 
+		player.objectCollisions(player.playerTexture, key, speedPotionRect);
 
+		if (player.isKeyCollected) {
+			key.setPosition(player.position.x - key.getSize().x / 2.f, player.position.y - key.getSize().y / 2.f);
+		}
+		if (!player.isPotionCollected) {
+			window.draw(speedPotionRect);
+		}
+		else {
+			player.playerTexture.setFillColor(sf::Color(216, 174, 255));
+			player.vitesse = 400;
+		}
+
+		window.draw(key);
 
 		// Draw the player
 
@@ -182,4 +322,5 @@ void Game::run() {
 		window.display();
 
 	}
+
 }

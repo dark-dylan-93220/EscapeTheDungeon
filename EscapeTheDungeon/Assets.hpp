@@ -82,6 +82,12 @@ public:
 			element.setTexture(&doorBottomLeft);
 		else if (assetCode == "doorBottomRight")
 			element.setTexture(&doorBottomRight);
+		else if (assetCode == "doorKey") {
+			element.setTexture(&doorKey);
+		}
+		else if (assetCode == "speedPotion") {
+			element.setTexture(&speedPotion);
+		}
 		else {
 			std::cerr << "Aucun code d'asset ne correspond a cette texture. (" << assetCode << ")\n";
 		}

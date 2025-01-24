@@ -17,6 +17,7 @@ public:
 	sf::Event event;
 	sf::Clock Clock;
 	bool isRunning;
+	bool isGameOver = false;
 	float deltaTime;
 	sf::RenderWindow window;
 	
@@ -26,7 +27,7 @@ private:
 
 class Entity {
 protected:
-	virtual void update(float deltaTime, sf::Vector2f &position) = 0;
+	virtual void update(float deltaTime, sf::Vector2f &position, sf::RectangleShape &shape) = 0;
 	virtual void draw(sf::RenderWindow& window) = 0;
 };
 
